@@ -1,6 +1,5 @@
 /* ==== Base y variables ==== */
 * { box-sizing: border-box; }
-/* Tamaño único para obstáculos y monedas */
 :root { --dayCycle: 60s; --scale: 1; --entitySize: 44px; }
 
 body {
@@ -50,17 +49,9 @@ body {
   font-weight: 700;
 }
 .hud-right { right: 6px; left: auto; }
-/* Centro superior para el cronómetro */
 .hud-center { left: 50%; transform: translateX(-50%); }
 
-/* Icono de vidas */
-.honey {
-  width: 22px; height: 22px;
-  background: url("img/Panal.png") center/contain no-repeat;
-  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.3));
-}
-
-/* Icono de puntos personalizado */
+/* Icono de puntos */
 .score-icon {
   width: 22px;
   height: 22px;
@@ -71,8 +62,7 @@ body {
 /* Oso (jugador) */
 #player {
   position: absolute; bottom: 0; left: 140px;
-  width: 56px;   /* adaptado al piso */
-  height: 56px;
+  width: 56px; height: 56px;
   background:url("img/Oso.png") center bottom/contain no-repeat;
   transform-origin: bottom center; z-index: 2;
   transition: bottom 120ms ease, opacity .12s linear;
@@ -91,7 +81,7 @@ body {
 .obstacle.disintegrate{ animation:rockVanish .24s ease forwards; }
 @keyframes rockVanish{ 0%{opacity:1;}70%{opacity:.35;}100%{opacity:0;transform:translateY(-6px);} }
 
-/* Variantes de obstáculos */
+/* Variantes de obstáculos (Roca1/Roca2) */
 .obstacle1 { background:url("img/Roca1.png") bottom center/contain no-repeat; }
 .obstacle2 { background:url("img/Roca2.png") bottom center/contain no-repeat; }
 
@@ -106,7 +96,7 @@ body {
 .coin.pop { animation: coinPop .24s ease forwards; }
 @keyframes coinPop { 0%{transform:scale(1); opacity:1;} 100%{transform:scale(1.6); opacity:0;} }
 
-/* Variantes de monedas */
+/* Variantes de monedas (Moneda1/Moneda2) */
 .coin1 { background:url("img/Moneda1.png") center/contain no-repeat; }
 .coin2 { background:url("img/Moneda2.png") center/contain no-repeat; }
 
@@ -119,7 +109,7 @@ body {
 .overlay.visible { display:flex; }
 .overlay-box {
   background:#fff; border:2px solid #333; border-radius:14px;
-  padding:24px 28px; max-width: 500px; width:90%; text-align: center;
+  padding:24px 28px; max-width: 560px; width:90%; text-align: center;
 }
 .btn {
   display:inline-block; padding:12px 20px; border-radius:10px; border:2px solid #333;
