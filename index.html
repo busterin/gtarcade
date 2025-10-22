@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OSO RUNNER</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <!-- Contenedor del juego -->
+  <div class="game" id="gameWrapper">
+    <!-- tabindex="0" para poder enfocar el área y recibir teclado dentro de iframes -->
+    <div class="stage" id="gameArea" tabindex="0" aria-label="Área de juego">
+      <!-- HUD de vidas -->
+      <div id="hud" class="hud" aria-label="Vidas restantes"></div>
+
+      <!-- HUD de puntos -->
+      <div id="scoreHud" class="hud hud-right" aria-label="Puntos">
+        <div class="score-icon"></div>
+        <span id="coinTxt">0</span>
+      </div>
+
+      <!-- HUD de tiempo -->
+      <div id="timerHud" class="hud hud-center" aria-label="Tiempo restante">
+        ⏱️ <span id="timeTxt">1:00</span>
+      </div>
+
+      <!-- Tinte de cielo (ciclo día/noche) -->
+      <div id="sky" class="sky-tint" aria-hidden="true"></div>
+
+      <!-- Jugador -->
+      <div id="player" role="img" aria-label="Oso"></div>
+    </div>
+  </div>
+
+  <!-- Overlay de fin de partida por tiempo -->
+  <div id="winOverlay" class="overlay" aria-hidden="true">
+    <div class="overlay-box" role="dialog" aria-live="polite" aria-label="Fin de partida">
+      <h2>¡LO HAS CONSEGUIDO!</h2>
+      <p>Has conseguido <strong><span id="finalPoints">0</span></strong> puntos</p>
+      <button id="restartBtn" class="btn primary" aria-label="Reiniciar partida">Reiniciar</button>
+    </div>
+  </div>
+
+  <!-- Controles móviles (solo subir/bajar) -->
+  <div class="controls" aria-label="Controles móviles">
+    <button id="btnUp"   class="ctrl" aria-label="Subir de línea">⬆︎</button>
+    <button id="btnDown" class="ctrl" aria-label="Bajar de línea">⬇︎</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
