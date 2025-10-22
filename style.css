@@ -1,0 +1,144 @@
+/* ==== Base y variables ==== */
+* { box-sizing: border-box; }
+/* Tamaño único para obstáculos y monedas */
+:root { --dayCycle: 60s; --scale: 1; --entitySize: 44px; }
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #662D91;  /* color de fondo exterior */
+}
+
+/* Contenedor del juego */
+.game { width: 100vw; max-width: 1100px; margin: 10px auto; }
+
+/* Área de juego (600×200) */
+.stage {
+  position: relative;
+  width: 600px;
+  height: 200px;
+  margin: 0 auto;
+  background:#fff url("img/FondoTile.PNG") repeat-x bottom/auto 100%;
+  border: 2px solid #333;
+  overflow: hidden;
+  transform: scale(var(--scale));
+  transform-origin: top center;
+}
+
+/* 👇 Quita marco azul al enfocar el área */
+#gameArea:focus { outline: none; }
+
+/* Cielo día-noche (sutil) */
+.sky-tint {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  mix-blend-mode: multiply; opacity: 0.9;
+  animation: skyCycle var(--dayCycle) linear infinite;
+}
+@keyframes skyCycle {
+  0%{background:transparent;} 25%{background:rgba(255,200,120,0.18);}
+  50%{background:rgba(30,60,120,0.38);} 75%{background:rgba(255,120,160,0.22);}
+  100%{background:transparent;}
+}
+
+/* HUD genérico */
+.hud {
+  position: absolute; top: 6px; left: 6px; z-index: 5;
+  display: flex; gap: 6px; align-items: center;
+  padding: 4px 6px;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid #333; border-radius: 8px;
+  font-weight: 700;
+}
+.hud-right { right: 6px; left: auto; }
+/* Centro superior para el cronómetro */
+.hud-center { left: 50%; transform: translateX(-50%); }
+
+/* Icono de vidas */
+.honey {
+  width: 22px; height: 22px;
+  background: url("img/Panal.png") center/contain no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.3));
+}
+
+/* Icono de puntos personalizado */
+.score-icon {
+  width: 22px;
+  height: 22px;
+  background: url("img/Puntos.png") center/contain no-repeat;
+  display: inline-block;
+}
+
+/* Oso (jugador) */
+#player {
+  position: absolute; bottom: 0; left: 140px;
+  width: 56px;   /* adaptado al piso */
+  height: 56px;
+  background:url("img/Oso.png") center bottom/contain no-repeat;
+  transform-origin: bottom center; z-index: 2;
+  transition: bottom 120ms ease, opacity .12s linear;
+}
+#player.hurt { animation: hurtBlink .6s ease-in-out; }
+@keyframes hurtBlink { 0%,100%{opacity:1;} 20%,40%,60%,80%{opacity:.2;} }
+
+/* Obstáculos */
+.obstacle {
+  position:absolute; bottom:0; width:var(--entitySize); height:var(--entitySize); z-index:1;
+  background:url("img/Roca1.png") bottom center/contain no-repeat;
+  animation: moveObstacle var(--obDur,3.2s) linear 1;
+  right: -60px;
+}
+@keyframes moveObstacle { from{ right:-60px; } to{ right:100%; } }
+.obstacle.disintegrate{ animation:rockVanish .24s ease forwards; }
+@keyframes rockVanish{ 0%{opacity:1;}70%{opacity:.35;}100%{opacity:0;transform:translateY(-6px);} }
+
+/* Variantes de obstáculos */
+.obstacle1 { background:url("img/Roca1.png") bottom center/contain no-repeat; }
+.obstacle2 { background:url("img/Roca2.png") bottom center/contain no-repeat; }
+
+/* Monedas */
+.coin {
+  position:absolute; width:var(--entitySize); height:var(--entitySize); z-index:1;
+  background:url("img/Moneda1.png") center/contain no-repeat;
+  animation: moveCoin var(--coinDur,3.2s) linear 1;
+  right: -30px;
+}
+@keyframes moveCoin { from{ right:-30px; } to{ right:100%; } }
+.coin.pop { animation: coinPop .24s ease forwards; }
+@keyframes coinPop { 0%{transform:scale(1); opacity:1;} 100%{transform:scale(1.6); opacity:0;} }
+
+/* Variantes de monedas */
+.coin1 { background:url("img/Moneda1.png") center/contain no-repeat; }
+.coin2 { background:url("img/Moneda2.png") center/contain no-repeat; }
+
+/* Overlays */
+.overlay {
+  position: fixed; inset: 0; display:none;
+  align-items:center; justify-content:center;
+  background: rgba(0,0,0,.6); z-index: 3000;
+}
+.overlay.visible { display:flex; }
+.overlay-box {
+  background:#fff; border:2px solid #333; border-radius:14px;
+  padding:24px 28px; max-width: 500px; width:90%; text-align: center;
+}
+.btn {
+  display:inline-block; padding:12px 20px; border-radius:10px; border:2px solid #333;
+  background:#fff; cursor:pointer; font-weight:700;
+  box-shadow:0 4px 0 #333; transition:transform .06s ease, box-shadow .2s ease;
+}
+.btn.primary { background:#2ecc71; border-color:#27ae60; color:#fff; box-shadow:0 4px 0 #239d57; }
+
+/* Controles móviles */
+.controls{
+  position: fixed; left:50%; transform: translateX(-50%);
+  bottom: 10px; display:flex; gap:12px; justify-content:center; align-items:center;
+  padding:10px 12px; background: rgba(255,255,255,0.9);
+  border: 2px solid #333; border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15); z-index: 1500; backdrop-filter: blur(4px);
+  max-width: calc(100vw - 20px);
+}
+.ctrl{
+  width:min(22vw,120px); max-width:140px; height:56px; border:2px solid #333; border-radius:10px;
+  background:#fff; font-size:22px; font-weight:700; touch-action: manipulation;
+}
+@media (min-width: 1200px){ .controls{ display:none; } }
