@@ -9,7 +9,7 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-  background: #D8BFA3;  /* 👈 marrón claro */
+  background: transparent;  /* 👈 fondo exterior transparente */
 }
 
 /* Contenedor del juego */
@@ -21,7 +21,7 @@ body {
   width: 600px;
   height: 200px;
   margin: 0 auto;
-  background: #D8BFA3 url("img/FondoTile.PNG") repeat-x bottom/auto 100%;
+  background: transparent url("img/FondoTile.PNG") repeat-x bottom/auto 100%; /* 👈 transparente */
   border: 2px solid #333;
   overflow: hidden;
   transform: scale(var(--scale));
@@ -68,7 +68,7 @@ body {
   position: absolute;
   bottom: 0;
   left: 140px;
-  width: 46px;    /* 👈 antes 56px */
+  width: 46px;    /* 👈 más pequeño que el original */
   height: 46px;
   background: url("img/Oso.png") center bottom/contain no-repeat;
   transform-origin: bottom center;
