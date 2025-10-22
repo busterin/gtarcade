@@ -1,16 +1,16 @@
 // ====== Referencias ======
 const gameWrapper = document.getElementById("gameWrapper");
-const gameArea    = document.getElementById("gameArea"); // <div id="gameArea" tabindex="0">
-const hud         = document.getElementById("hud");
+const gameArea    = document.getElementById("gameArea");
 const player      = document.getElementById("player");
 const btnUp       = document.getElementById("btnUp");
 const btnDown     = document.getElementById("btnDown");
 const coinTxt     = document.getElementById("coinTxt");
 const timeTxt     = document.getElementById("timeTxt");
-const finalPoints = document.getElementById("finalPoints");
 
 const winOverlay  = document.getElementById("winOverlay");
+const failOverlay = document.getElementById("failOverlay");
 const restartBtn  = document.getElementById("restartBtn");
+const retryBtn    = document.getElementById("retryBtn");
 
 // ====== Sonidos ======
 const sndHit  = new Audio("sounds/hit.mp3");
@@ -55,8 +55,7 @@ function fitStage(){
 
 // ====== Estado ======
 let running=false, worldX=0;
-const MAX_LIVES=3; let lives=MAX_LIVES; let invulnerableUntil=0;
-let coins=0;
+let points = 5; // 👈 empiezas con 5 puntos
 
 // Tiempo (1 minuto)
 const ROUND_DURATION_S = 60;
@@ -77,16 +76,7 @@ const MAX_SPEED_SCALE = 2.0;
 let obstacleTimer=null, coinTimer=null;
 
 // ====== HUD ======
-function renderLives(){
-  if(!hud) return;
-  hud.innerHTML="";
-  for(let i=0;i<lives;i++){
-    const el=document.createElement("div");
-    el.className="honey";
-    hud.appendChild(el);
-  }
-}
-function renderCoins(){ if (coinTxt) coinTxt.textContent = String(coins); }
+function renderPoints(){ if (coinTxt) coinTxt.textContent = String(points); }
 function formatTime(s){
   const m = Math.floor(s/60);
   const ss = Math.max(0, Math.ceil(s - m*60));
@@ -96,13 +86,12 @@ function renderTime(){ if (timeTxt) timeTxt.textContent = formatTime(timeLeft); 
 
 // ====== Inicio / reinicio ======
 function startGame(){
-  hideWin();
+  hideOverlays();
   running=true; worldX=0; speedScale=1; laneIndex=0;
-  lives=MAX_LIVES; invulnerableUntil=0; renderLives();
-  coins=0; renderCoins();
+  points = 5; renderPoints();
   timeLeft = ROUND_DURATION_S; renderTime();
 
-  player.style.left = "140px";                           // X fija
+  player.style.left = "140px";
   player.style.bottom = LANE_BOTTOMS[laneIndex] + "px";
   player.classList.remove("hurt");
 
@@ -112,7 +101,6 @@ function startGame(){
   fitStage(); musicStart();
   scheduleNextObstacle(); scheduleNextCoin();
 
-  // Enfocar juego (para Genially/iframe)
   focusGame();
 }
 
@@ -127,10 +115,9 @@ function tryLane(delta){
   player.style.bottom = LANE_BOTTOMS[laneIndex] + "px";
   try { sndStep.currentTime=0; sndStep.play(); } catch(_){}
 }
-// Captura global: trae foco y mueve
 window.addEventListener("keydown", (e)=>{
   if (e.code === "ArrowUp" || e.code === "ArrowDown") {
-    e.preventDefault(); // evita scroll en contenedor
+    e.preventDefault();
     focusGame();
     if (e.code === "ArrowUp")   tryLane(+1);
     if (e.code === "ArrowDown") tryLane(-1);
@@ -163,9 +150,7 @@ function moveLoop(t){
     // Tiempo
     timeLeft = Math.max(0, timeLeft - dt);
     renderTime();
-    if (timeLeft <= 0) {
-      onTimeUp(); // fin por tiempo
-    }
+    if (timeLeft <= 0) onTimeUp();
 
     // Colisiones / recogidas
     checkCollisions();
@@ -174,7 +159,7 @@ function moveLoop(t){
 }
 requestAnimationFrame(moveLoop);
 
-// ====== Spawners (dos tipos por entidad, sin salto) ======
+// ====== Spawners ======
 function rand(a,b){return Math.random()*(b-a)+a;}
 function randi(a,b){return Math.floor(rand(a,b));}
 
@@ -186,7 +171,7 @@ function spawnObstacle(){
   ob.dataset.lane = String(lane);
   ob.style.bottom = LANE_BOTTOMS[lane] + "px";
 
-  // tipo visual aleatorio: obstacle1 / obstacle2
+  // tipo visual aleatorio: obstacle1 / obstacle2 (Roca1/2)
   const type = Math.random() < 0.5 ? "obstacle1" : "obstacle2";
   ob.classList.add(type);
 
@@ -197,7 +182,6 @@ function spawnObstacle(){
 }
 function scheduleNextObstacle(){
   clearTimeout(obstacleTimer);
-  // menos frecuencia (según lo acordado)
   const delay = randi(1800, 2800) / speedScale;
   obstacleTimer = setTimeout(()=>{ spawnObstacle(); scheduleNextObstacle(); }, delay);
 }
@@ -210,7 +194,7 @@ function spawnCoin(){
   c.dataset.lane = String(lane);
   c.style.bottom = LANE_BOTTOMS[lane] + "px";
 
-  // tipo visual aleatorio: coin1 / coin2
+  // tipo visual aleatorio: coin1 / coin2 (Moneda1/2)
   const type = Math.random() < 0.5 ? "coin1" : "coin2";
   c.classList.add(type);
 
@@ -221,7 +205,6 @@ function spawnCoin(){
 }
 function scheduleNextCoin(){
   clearTimeout(coinTimer);
-  // menos frecuencia
   const delay = randi(1200, 2000) / Math.min(speedScale, 1.5);
   coinTimer = setTimeout(()=>{ spawnCoin(); scheduleNextCoin(); }, delay);
 }
@@ -233,21 +216,20 @@ function checkCollisions(){
   if(!running) return;
   const rp = player.getBoundingClientRect();
 
-  // Monedas del mismo lane
+  // Monedas del mismo lane => +1 punto
   document.querySelectorAll(".coin").forEach(c=>{
     if (!c.isConnected) return;
     if (Number(c.dataset.lane) !== laneIndex) return;
     const rc = c.getBoundingClientRect();
     if (rectsOverlap(rp, rc)) {
       try { sndCoin.currentTime=0; sndCoin.play(); } catch(_){}
-      coins += 1; renderCoins();
+      points += 1; renderPoints();
       c.classList.add("pop");
       setTimeout(()=> c.remove(), 240);
-      // ya no hay condición de victoria por monedas; solo por tiempo
     }
   });
 
-  // Obstáculos del mismo lane
+  // Obstáculos del mismo lane => -1 punto
   document.querySelectorAll(".obstacle").forEach(ob=>{
     if (!ob.isConnected) return;
     if (Number(ob.dataset.lane) !== laneIndex) return;
@@ -265,39 +247,31 @@ function destroyObstacle(ob){
 }
 
 function onHit(ob){
-  const now=performance.now();
-  if(now < invulnerableUntil || !running) return;
-  lives = Math.max(0, lives - 1);
-  renderLives();
   player.classList.add("hurt");
-  invulnerableUntil = now + 800;
   setTimeout(()=> player.classList.remove("hurt"), 650);
+  points -= 1; renderPoints();      // 👈 resta 1 punto
   destroyObstacle(ob);
-  if(lives <= 0) onGameOver();
 }
 
-// ====== Fin por tiempo / Game Over / Reinicio ======
-function showWin(){ winOverlay?.classList.add("visible"); }
-function hideWin(){ winOverlay?.classList.remove("visible"); }
-
+// ====== Fin por tiempo / Reinicio ======
+function hideOverlays(){
+  winOverlay?.classList.remove("visible");
+  failOverlay?.classList.remove("visible");
+}
 function onTimeUp(){
   if (!running) return;
   running = false;
   musicStop();
   clearTimeout(obstacleTimer); clearTimeout(coinTimer);
-  if (finalPoints) finalPoints.textContent = String(coins);
-  showWin();
-}
 
+  if (points > 0) {
+    winOverlay?.classList.add("visible");
+  } else {
+    failOverlay?.classList.add("visible");
+  }
+}
 restartBtn?.addEventListener("click", ()=> startGame());
-
-function onGameOver(){
-  running=false;
-  clearTimeout(obstacleTimer); clearTimeout(coinTimer);
-  musicStop();
-  // reinicio suave tras perder por vidas
-  setTimeout(()=> startGame(), 1200);
-}
+retryBtn?.addEventListener("click", ()=> startGame());
 
 // ====== Auto-enfoque (clave para Genially/iframe) ======
 function focusGame() {
