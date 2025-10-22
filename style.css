@@ -1,11 +1,15 @@
 /* ==== Base y variables ==== */
 * { box-sizing: border-box; }
-:root { --dayCycle: 60s; --scale: 1; --entitySize: 44px; }
+:root {
+  --dayCycle: 60s;
+  --scale: 1;
+  --entitySize: 54px; /* tamaño base aumentado (monedas y rocas) */
+}
 
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-  background: #662D91;  /* color de fondo exterior */
+  background: #D8BFA3;  /* 👈 marrón claro */
 }
 
 /* Contenedor del juego */
@@ -17,7 +21,7 @@ body {
   width: 600px;
   height: 200px;
   margin: 0 auto;
-  background:#fff url("img/FondoTile.PNG") repeat-x bottom/auto 100%;
+  background: #D8BFA3 url("img/FondoTile.PNG") repeat-x bottom/auto 100%;
   border: 2px solid #333;
   overflow: hidden;
   transform: scale(var(--scale));
@@ -59,20 +63,25 @@ body {
   display: inline-block;
 }
 
-/* Oso (jugador) */
+/* ==== OSO ==== */
 #player {
-  position: absolute; bottom: 0; left: 140px;
-  width: 56px; height: 56px;
-  background:url("img/Oso.png") center bottom/contain no-repeat;
-  transform-origin: bottom center; z-index: 2;
+  position: absolute;
+  bottom: 0;
+  left: 140px;
+  width: 46px;    /* 👈 antes 56px */
+  height: 46px;
+  background: url("img/Oso.png") center bottom/contain no-repeat;
+  transform-origin: bottom center;
+  z-index: 2;
   transition: bottom 120ms ease, opacity .12s linear;
 }
 #player.hurt { animation: hurtBlink .6s ease-in-out; }
 @keyframes hurtBlink { 0%,100%{opacity:1;} 20%,40%,60%,80%{opacity:.2;} }
 
-/* Obstáculos */
+/* ==== OBSTÁCULOS ==== */
 .obstacle {
-  position:absolute; bottom:0; width:var(--entitySize); height:var(--entitySize); z-index:1;
+  position:absolute; bottom:0;
+  width:var(--entitySize); height:var(--entitySize); z-index:1;
   background:url("img/Roca1.png") bottom center/contain no-repeat;
   animation: moveObstacle var(--obDur,3.2s) linear 1;
   right: -60px;
@@ -85,7 +94,7 @@ body {
 .obstacle1 { background:url("img/Roca1.png") bottom center/contain no-repeat; }
 .obstacle2 { background:url("img/Roca2.png") bottom center/contain no-repeat; }
 
-/* Monedas */
+/* ==== MONEDAS ==== */
 .coin {
   position:absolute; width:var(--entitySize); height:var(--entitySize); z-index:1;
   background:url("img/Moneda1.png") center/contain no-repeat;
@@ -100,7 +109,7 @@ body {
 .coin1 { background:url("img/Moneda1.png") center/contain no-repeat; }
 .coin2 { background:url("img/Moneda2.png") center/contain no-repeat; }
 
-/* Overlays */
+/* ==== OVERLAYS ==== */
 .overlay {
   position: fixed; inset: 0; display:none;
   align-items:center; justify-content:center;
@@ -118,7 +127,7 @@ body {
 }
 .btn.primary { background:#2ecc71; border-color:#27ae60; color:#fff; box-shadow:0 4px 0 #239d57; }
 
-/* Controles móviles */
+/* ==== CONTROLES MÓVILES ==== */
 .controls{
   position: fixed; left:50%; transform: translateX(-50%);
   bottom: 10px; display:flex; gap:12px; justify-content:center; align-items:center;
