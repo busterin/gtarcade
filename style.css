@@ -129,15 +129,31 @@ body {
 
 /* ==== CONTROLES MÓVILES ==== */
 .controls{
-  position: fixed; left:50%; transform: translateX(-50%);
-  bottom: 10px; display:flex; gap:12px; justify-content:center; align-items:center;
-  padding:10px 12px; background: rgba(255,255,255,0.9);
-  border: 2px solid #333; border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15); z-index: 1500; backdrop-filter: blur(4px);
+  position: fixed;
+  left:50%;
+  transform: translateX(-50%);
+  bottom: 10px;
+  display:flex !important; /* 👈 siempre visibles, también en escritorio */
+  gap:12px;
+  justify-content:center;
+  align-items:center;
+  padding:10px 12px;
+  background: rgba(255,255,255,0.9);
+  border: 2px solid #333;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  z-index: 1500;
+  backdrop-filter: blur(4px);
   max-width: calc(100vw - 20px);
 }
 .ctrl{
-  width:min(22vw,120px); max-width:140px; height:56px; border:2px solid #333; border-radius:10px;
-  background:#fff; font-size:22px; font-weight:700; touch-action: manipulation;
+  width:min(22vw,120px);
+  max-width:140px;
+  height:56px;
+  border:2px solid #333;
+  border-radius:10px;
+  background:#fff;
+  font-size:22px;
+  font-weight:700;
+  touch-action: manipulation;
 }
-@media (min-width: 1200px){ .controls{ display:none; } }
